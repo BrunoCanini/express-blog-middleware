@@ -40,7 +40,7 @@ function index (req, res) {
         res.status(406).send("Not Acceptable");
       },
     })
-}
+  }
 
 function show (req, res) {
 
@@ -52,7 +52,33 @@ function show (req, res) {
     }
 
     res.json(post);
-}
+  }
+
+function create (req, res) {
+    res.format({
+      html: () => {
+        res.type("html").send("<h1>Creazione nuovo post</h1>");
+
+      },
+      default: () => {
+        res.status(406).send("Not Acceptable");
+      },
+    })
+  }
+
+function download (req, res) {
+
+    const postSlug = req.params.slug
+    const post = postsDb.find(post => post.slug == postSlug)
+    const filePath = path.resolve(__dirname, "..", "public", "imgs", "posts", post.image);
+
+    if(!post){
+        res.status(404).send("post non trovato");
+    }
+
+    res.download(filePath);
+
+  }
 
 function store (req, res) {
   console.log(req.body);
@@ -77,8 +103,45 @@ function store (req, res) {
   })
 }
 
-module.exports = {
+function destroy(req, res) {
+
+   // trovo l indice da eliminare
+   
+  const postSlug = req.params.slug
+  const post = postsDb.find(post => post.slug == postSlug)
+  const postIndex = postsDb.findIndex(post => post.slug == req.params.slug);
+
+  if(!post){
+      res.status(404).send("post non trovato");
+  }
+
+  // rimuovo l indice
+  postsDb.splice(postIndex, 1);
+
+  // converto
+  const json = JSON.stringify(postsDb);
+
+  // scrivo
+  fs.writeFileSync(path.resolve(__dirname, "../db.json"), json);
+
+  res.format({
+    html: () => {
+      res.type("html").send(res.redirect("/posts"));
+
+    },
+    default: () => {
+      res.send("eliminazione avvenuta con successo");
+    },
+  })
+
+}
+
+
+  module.exports = {
     index,
     show,
+    create,
+    download,
     store,
+    destroy
   }

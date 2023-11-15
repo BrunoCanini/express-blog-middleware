@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 
 const homeController = require("./controllers/home");
 const posts = require("./routers/posts");
+const authRouter = require("./routers/auth");
 const errorsFormatterMiddleware = require('./middlewares/errorsFormatter');
 const routeNotFoundMiddleware = require('./middlewares/routeNotFound');
 
@@ -16,6 +17,7 @@ app.use(express.urlencoded({ extended: true}));
 
 app.get("/", homeController.index);
 app.use("/posts", posts);
+app.use("/", authRouter);
 
 
 // gestiamo con il middlewars gli errori (come ultimo elemento prima del listen)

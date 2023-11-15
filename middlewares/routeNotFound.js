@@ -4,7 +4,7 @@ module.exports = function (req, res, nex){
         json: ()=>{
             res.status(404).json({
                 message:"Error 404 not found",
-                error: err.message,
+                // error: err.message,
             });
         },
         default: () => {
